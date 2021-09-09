@@ -1,0 +1,5 @@
+requests
+foursquare
+apscheduler
+flask
+flask-restful
