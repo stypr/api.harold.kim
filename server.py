@@ -7,36 +7,62 @@ Main application for the scheduler and the web server
 """
 
 import os
+import sys
 import time
 import json
+import gevent.pywsgi
 from flask import Flask
 from flask_restful import Resource, Api
 from apscheduler.schedulers.background import BackgroundScheduler
-from crawler import sega, swarm
+from crawler import sega, swarm, steam, gists
 
 ####### Scheduler #######
 
 def run_task():
     """ Function for test purposes. """
-    exit(0)
     print("[*] Starting Scheduler..")
 
-    # Collect swarm data
-    _swarm = swarm.collect_data()
-    _swarm['checkins']['items'] = _swarm['checkins']['items'][:5]
-    f = open(os.path.join("data", "swarm.json"), "wb")
-    f.write(json.dumps(_swarm).encode())
-    f.close()
+    # Collect github data
+    try:
+        _gists = gists.collect_data()
+        f = open(os.path.join("data", "gists.json"), "wb")
+        f.write(json.dumps(_gists).encode())
+        f.close()
+    except Exception as e:
+        print("[*] Gists crashed")
 
-    # Collect SEGA data
-    _sega = sega.collect_data()
-    f = open(os.path.join("data", "sega.json"), "wb")
-    f.write(json.dumps(_sega).encode())
-    f.close()
+    # Collect steam data
+    try:
+        _steam = steam.collect_data()
+        f = open(os.path.join("data", "steam.json"), "wb")
+        f.write(json.dumps(_steam).encode())
+        f.close()
+    except:
+        print("[*] Steam crashed")
+
+    # Collect swarm data
+    try:
+        _swarm = swarm.collect_data()
+        _swarm['checkins']['items'] = _swarm['checkins']['items'][:3]
+        f = open(os.path.join("data", "swarm.json"), "wb")
+        f.write(json.dumps(_swarm).encode())
+        f.close()
+    except:
+        print("[*] Swarm Crashed")
+
+    try:
+        # Collect SEGA data
+        _sega = sega.collect_data()
+        f = open(os.path.join("data", "sega.json"), "wb")
+        f.write(json.dumps(_sega).encode())
+        f.close()
+    except:
+        print("[*] SEGA Crashed")
 
     print("[*] Updated.")
     return True
 
+run_task()
 sched = BackgroundScheduler(daemon=True)
 sched.add_job(run_task, 'interval', hours=1, args=[])
 sched.start()
@@ -45,6 +71,18 @@ sched.start()
 
 app = Flask(__name__)
 api = Api(app)
+
+class Gists(Resource):
+    """ /api/v1/gists: Get GitHub gists """
+    def get(self):
+        """ grabs the output from the scheduled task. """
+        return json.loads(open(os.path.join("data", "gists.json"), "rb").read())
+
+class Steam(Resource):
+    """ /api/v1/steam: Get Steam Game Information """
+    def get(self):
+        """ grabs the output from the scheduled task. """
+        return json.loads(open(os.path.join("data", "steam.json"), "rb").read())
 
 class Sega(Resource):
     """ /api/v1/sega: Get SEGA Game Information """
@@ -58,13 +96,19 @@ class Swarm(Resource):
         """ grabs the output from the scheduled task. """
         return json.loads(open(os.path.join("data", "swarm.json"), "rb").read())
 
+api.add_resource(Gists, "/api/v1/gists")
+api.add_resource(Steam, "/api/v1/steam")
 api.add_resource(Swarm, "/api/v1/swarm")
 api.add_resource(Sega, "/api/v1/sega")
 
 @app.route("/")
 def home():
     """ Function for test purposes. """
-    return "hello"
+    return "api.harold.kim"
 
 if __name__ == "__main__":
-    app.run(debug=False, port=3000, host='127.0.0.1')
+    if len(sys.argv) != 1:
+        app.run(debug=True, port=3000, host='0.0.0.0')
+    else:
+        app_server = gevent.pywsgi.WSGIServer(('localhost', 3000), app)
+        app_server.serve_forever()

@@ -1,5 +1,7 @@
+gevent
 requests
 foursquare
 apscheduler
 flask
 flask-restful
+dotenv

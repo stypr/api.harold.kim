@@ -3,9 +3,15 @@ crawler.py
 
 Crawler for the Rhythm Game
 """
+import os
 import re
 import requests
-from .config import SEGA_USERNAME, SEGA_PASSWORD
+from dotenv import load_dotenv
+
+# load envvars
+load_dotenv()
+SEGA_USERNAME = os.getenv("SEGA_USERNAME")
+SEGA_PASSWORD = os.getenv("SEGA_PASSWORD")
 
 def get_maimai_data(username, password, user_idx=0):
     """ (str, str, str) -> dict
@@ -57,14 +63,14 @@ def get_maimai_data(username, password, user_idx=0):
         response.text
     )
     user_rating = re.findall(
-        '<div class="rating_block .+">(.+)</div>',
+        '<div class="rating_block(.+)?">(.+)</div>',
         response.text
     )
 
     result["info"] = {
         "title": user_title[0],
         "nickname": user_nickname[0].strip(),
-        "current_rating": int(user_rating[0]),
+        "current_rating": int(user_rating[0][1]),
         "extra": user_extra
     }
 

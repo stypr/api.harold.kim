@@ -7,10 +7,14 @@ swarm.py
 FourSquare Swarm API
 
 """
-
+import os
 import json
 import foursquare
-from .config import SWARM_ACCESS_TOKEN
+from dotenv import load_dotenv
+
+# load envvars
+load_dotenv()
+SWARM_ACCESS_TOKEN = os.getenv("SWARM_ACCESS_TOKEN")
 
 def generate_auth_url(client_id, client_secret, redirect_uri):
     """ (str, str, str) -> str
