@@ -4,4 +4,4 @@ foursquare
 apscheduler
 flask
 flask-restful
-dotenv
+python-dotenv

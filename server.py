@@ -62,7 +62,6 @@ def run_task():
     print("[*] Updated.")
     return True
 
-run_task()
 sched = BackgroundScheduler(daemon=True)
 sched.add_job(run_task, 'interval', hours=1, args=[])
 sched.start()
