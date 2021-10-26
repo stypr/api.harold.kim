@@ -53,11 +53,13 @@ def run_task():
     try:
         # Collect SEGA data
         _sega = sega.collect_data()
-        f = open(os.path.join("data", "sega.json"), "wb")
-        f.write(json.dumps(_sega).encode())
-        f.close()
-    except:
-        print("[*] SEGA Crashed")
+        # print(_sega)
+        if _sega['ongeki'] and _sega['chunithm'] and _sega['maimai']:
+            f = open(os.path.join("data", "sega.json"), "wb")
+            f.write(json.dumps(_sega).encode())
+            f.close()
+    except Exception as e:
+        print("[*] SEGA Crashed", str(e))
 
     print("[*] Updated.")
     return True
@@ -95,10 +97,18 @@ class Swarm(Resource):
         """ grabs the output from the scheduled task. """
         return json.loads(open(os.path.join("data", "swarm.json"), "rb").read())
 
+class Proseka(Resource):
+    """ /api/v1/proseka: Proseka Information """
+    def get(self):
+        return {
+            "badges": ["皆伝 ☆2"],
+        }
+
 api.add_resource(Gists, "/api/v1/gists")
 api.add_resource(Steam, "/api/v1/steam")
 api.add_resource(Swarm, "/api/v1/swarm")
 api.add_resource(Sega, "/api/v1/sega")
+api.add_resource(Proseka, "/api/v1/proseka")
 
 @app.route("/")
 def home():
