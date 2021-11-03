@@ -14,7 +14,7 @@ import gevent.pywsgi
 from flask import Flask
 from flask_restful import Resource, Api
 from apscheduler.schedulers.background import BackgroundScheduler
-from crawler import sega, swarm, steam, gists
+from crawler import sega, swarm, steam, gists, proseka, osu
 
 ####### Scheduler #######
 
@@ -61,6 +61,27 @@ def run_task():
     except Exception as e:
         print("[*] SEGA Crashed", str(e))
 
+    try:
+        # Collect Proseka data
+        _proseka = proseka.collect_data()
+        if _proseka['user']['userGamedata']['name']:
+            f = open(os.path.join("data", "proseka.json"), "wb")
+            f.write(json.dumps(_proseka).encode())
+            f.close()
+    except Exception as e:
+        print("[*] Proseka Crashed", str(e))
+
+    try:
+        # Collect osu!catch data
+        _osu = osu.collect_data("4266189")
+        if _osu['user'] and _osu['recent_play']:
+            f = open(os.path.join("data", "osu.json"), "wb")
+            f.write(json.dumps(_osu).encode())
+            f.close()
+    except Exception as e:
+        print("[*] osu! Crashed", str(e))
+
+
     print("[*] Updated.")
     return True
 
@@ -100,15 +121,21 @@ class Swarm(Resource):
 class Proseka(Resource):
     """ /api/v1/proseka: Proseka Information """
     def get(self):
-        return {
-            "badges": ["皆伝 ☆2"],
-        }
+        """ grabs the output from the scheduled task. """
+        return json.loads(open(os.path.join("data", "proseka.json"), "rb").read())
+
+class Osu(Resource):
+    """ /api/v1/proseka: Proseka Information """
+    def get(self):
+        """ grabs the output from the scheduled task. """
+        return json.loads(open(os.path.join("data", "osu.json"), "rb").read())
 
 api.add_resource(Gists, "/api/v1/gists")
 api.add_resource(Steam, "/api/v1/steam")
 api.add_resource(Swarm, "/api/v1/swarm")
 api.add_resource(Sega, "/api/v1/sega")
 api.add_resource(Proseka, "/api/v1/proseka")
+api.add_resource(Osu, "/api/v1/osu")
 
 @app.route("/")
 def home():
@@ -119,5 +146,6 @@ if __name__ == "__main__":
     if len(sys.argv) != 1:
         app.run(debug=True, port=3000, host='0.0.0.0')
     else:
+        # run_task()
         app_server = gevent.pywsgi.WSGIServer(('localhost', 3000), app)
         app_server.serve_forever()
