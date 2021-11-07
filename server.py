@@ -14,12 +14,12 @@ import gevent.pywsgi
 from flask import Flask
 from flask_restful import Resource, Api
 from apscheduler.schedulers.background import BackgroundScheduler
-from crawler import sega, swarm, steam, gists, proseka, osu
-
+from crawler import sega, swarm, steam, gists, osu
+from crawler.pjsekai_api import proseka
 ####### Scheduler #######
 
-def run_task():
-    """ Function for test purposes. """
+def run_update_task():
+    """ Function for regular hourly updates.. """
     print("[*] Starting Scheduler..")
 
     # Collect github data
@@ -85,8 +85,15 @@ def run_task():
     print("[*] Updated.")
     return True
 
+def run_asset_task():
+    """ Updating asset server """
+    proseka.get_character_assets()
+    proseka.get_database()
+    proseka.update_asset_server()
+
 sched = BackgroundScheduler(daemon=True)
-sched.add_job(run_task, 'interval', hours=1, args=[])
+sched.add_job(run_update_task, 'interval', hours=1, args=[])
+sched.add_job(run_asset_task, 'interval', hours=3, args=[])
 sched.start()
 
 ####### Web #######
@@ -146,6 +153,7 @@ if __name__ == "__main__":
     if len(sys.argv) != 1:
         app.run(debug=True, port=3000, host='0.0.0.0')
     else:
-        # run_task()
+        # run_update_task()
+        # run_asset_task()
         app_server = gevent.pywsgi.WSGIServer(('localhost', 3000), app)
         app_server.serve_forever()
