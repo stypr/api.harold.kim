@@ -16,6 +16,7 @@ from flask_restful import Resource, Api
 from apscheduler.schedulers.background import BackgroundScheduler
 from crawler import sega, swarm, steam, gists, osu
 from crawler.pjsekai_api import proseka
+
 ####### Scheduler #######
 
 def run_update_task():
@@ -91,7 +92,7 @@ def run_asset_task():
     proseka.get_database()
     proseka.update_asset_server()
 
-sched = BackgroundScheduler(daemon=True)
+sched = BackgroundScheduler(daemon=True, timezone='Asia/Tokyo')
 sched.add_job(run_update_task, 'interval', hours=1, args=[])
 sched.add_job(run_asset_task, 'interval', hours=3, args=[])
 sched.start()
