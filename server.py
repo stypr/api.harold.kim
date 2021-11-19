@@ -14,9 +14,8 @@ import gevent.pywsgi
 from flask import Flask
 from flask_restful import Resource, Api
 from apscheduler.schedulers.background import BackgroundScheduler
-from crawler import sega, swarm, steam, gists, osu
+from crawler import sega, swarm, steam, gists, osu, storefinder
 from crawler.pjsekai_api import proseka
-
 ####### Scheduler #######
 
 def run_update_task():
@@ -92,9 +91,15 @@ def run_asset_task():
     proseka.get_database()
     proseka.update_asset_server()
 
+def run_daily_task():
+    """ Run daily tasks """
+    storefinder.update_data()
+
 sched = BackgroundScheduler(daemon=True, timezone='Asia/Tokyo')
 sched.add_job(run_update_task, 'interval', hours=1, args=[])
 sched.add_job(run_asset_task, 'interval', hours=3, args=[])
+sched.add_job(run_daily_task, 'cron', day_of_week='mon-sun', hour=16, minute=00, args=[])
+
 sched.start()
 
 ####### Web #######
