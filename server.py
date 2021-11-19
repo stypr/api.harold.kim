@@ -91,14 +91,14 @@ def run_asset_task():
     proseka.get_database()
     proseka.update_asset_server()
 
-def run_daily_task():
+def run_weekly_task():
     """ Run daily tasks """
     storefinder.update_data()
 
 sched = BackgroundScheduler(daemon=True, timezone='Asia/Tokyo')
 sched.add_job(run_update_task, 'interval', hours=1, args=[])
 sched.add_job(run_asset_task, 'interval', hours=3, args=[])
-sched.add_job(run_daily_task, 'cron', day_of_week='mon-sun', hour=16, minute=00, args=[])
+sched.add_job(run_weekly_task, 'cron', day_of_week='mon', hour=16, minute=00, args=[])
 
 sched.start()
 

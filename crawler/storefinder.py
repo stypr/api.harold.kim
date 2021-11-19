@@ -16,7 +16,7 @@ def commit_data(output_dir="./storefinder/"):
     _ = os.popen(f"git -C {output_dir} add {output_dir}/").read()
     curr_status = os.popen(f"git -C {output_dir} status").read()
     if "Changes to be committed:" in curr_status:
-        _ = os.popen(f"git -C {output_dir} commit -m \"JSON Update $(date '+%Y-%m-%d %H:%M:%S')\"").read()
+        _ = os.popen(f"git -C {output_dir} -c user-email=\"dev+storefinder@harold.kim\" commit -m \"JSON Update $(date '+%Y-%m-%d %H:%M:%S')\"").read()
     curr_status = os.popen(f"git -C {output_dir} status").read()
     if "Your branch is ahead of 'origin/master'" in curr_status:
         _ = os.popen(f"git -C {output_dir} push -f origin master").read()
