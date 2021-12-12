@@ -15,13 +15,13 @@ def commit_data(output_dir="./storefinder/"):
     output_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), output_dir)
     _ = os.popen(f"git -C {output_dir} add {output_dir}/").read()
     curr_status = os.popen(f"git -C {output_dir} status").read()
+    curr_status = os.popen(f"git -C {output_dir} status").read()
     if "Changes to be committed:" in curr_status:
-        _ = os.popen(f"git -C {output_dir} -c user-email=\"dev+storefinder@harold.kim\" commit -m \"JSON Update $(date '+%Y-%m-%d %H:%M:%S')\"").read()
+        _ = os.popen(f"git -C {output_dir} commit -m \"JSON Update $(date '+%Y-%m-%d %H:%M:%S')\"").read()
     curr_status = os.popen(f"git -C {output_dir} status").read()
     if "Your branch is ahead of 'origin/master'" in curr_status:
         _ = os.popen(f"git -C {output_dir} push -f origin master").read()
     return True
-
 
 def update_data(output_dir="./storefinder/"):
     """(str) -> dict
@@ -30,10 +30,10 @@ def update_data(output_dir="./storefinder/"):
     """
     output_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), output_dir)
     runner_hash = (
-        "7978cf714667f7b4121c1f218368051e"
-        + "aeb78f3d6374ab1e3d8261b60602b3f7"
-        + "bc9187d679a32e860a58eb914398acef"
-        + "c9103efc8db0e2c0495728094a312b5c"
+        "b2f88f979c834d11c6d87e57d36d0a97"
+        + "8a51117d7a8a74121093860993e7ab1a"
+        + "1901d479613254ea7b344bc9b8a98699"
+        + "ac16ed4fed3b13290ed8d5f807a499c9"
     )
 
     _ = os.popen(
