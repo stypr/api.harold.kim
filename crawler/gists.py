@@ -6,7 +6,6 @@ gists.py
 Crawler for Gists
 """
 import os
-import re
 import requests
 from dotenv import load_dotenv
 
@@ -28,3 +27,7 @@ def collect_data():
     """ collect data """
     result = get_gists(GITHUB_USERNAME)
     return result
+
+def verify_data(data):
+    """ Verify data """
+    return True

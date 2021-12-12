@@ -48,7 +48,13 @@ def get_my_checkin(access_token):
     return client.users.checkins()
 
 def collect_data():
-    return get_my_checkin(SWARM_ACCESS_TOKEN)
+    result = get_my_checkin(SWARM_ACCESS_TOKEN)
+    result['checkins']['items'] = result['checkins']['items'][:3]
+    return result
+
+def verify_data(data):
+    """ Verify data """
+    return True
 
 if __name__ == "__main__":
     f = open("track.json", "w")

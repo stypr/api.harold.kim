@@ -374,6 +374,10 @@ def collect_data():
     result['maimai'] = get_maimai_data(SEGA_USERNAME, SEGA_PASSWORD)
     return result
 
+def verify_data(data):
+    """ Verify data """
+    return data['ongeki'] and data['chunithm'] and data['maimai']
+
 if __name__ == "__main__":
     assert SEGA_USERNAME and SEGA_PASSWORD
     print(get_ongeki_data(SEGA_USERNAME, SEGA_PASSWORD))

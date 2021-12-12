@@ -6,7 +6,6 @@ steam.py
 Crawler for Steam
 """
 import os
-import re
 import requests
 from dotenv import load_dotenv
 
@@ -33,3 +32,8 @@ def collect_data():
     result = {}
     result = get_recent_playdata(STEAM_API_KEY, STEAM_ID)
     return result
+
+def verify_data(data):
+    """ Verify data """
+    return True
+

@@ -50,7 +50,7 @@ def fetch_data(user_id):
     result['recent_play'] = r
     return result
 
-def collect_data(user_id):
+def collect_data(user_id="4266189"):
     """ (str) -> dict
 
     Fetch data and optimize results
@@ -72,6 +72,11 @@ def collect_data(user_id):
 
     return r
 
+def verify_data(data):
+    """ Verify data """
+    return data['user'] and data['recent_play']
+
 if __name__ == "__main__":
     uid = "4266189"
     print(collect_data(uid))
+

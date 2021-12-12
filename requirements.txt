@@ -1,9 +1,10 @@
+fastapi
+uvicorn
+gunicorn
 gevent
 requests
 foursquare
 apscheduler
-flask
-flask-restful
 python-dotenv
 msgpack
 pycryptodome
