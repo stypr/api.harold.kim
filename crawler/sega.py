@@ -209,7 +209,6 @@ def get_chunithm_data(username, password, user_idx=0):
         "max_rating": float(user_rating_max[0]),
         "team": user_team[0][3] if len(user_team) else None,
     }
-    print(result['info'])
 
     # parse latest 10 playlogs
     result["log"] = []
