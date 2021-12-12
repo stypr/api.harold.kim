@@ -121,11 +121,12 @@ def get_maimai_data(username, password, user_idx=0):
 def get_chunithm_data(username, password, user_idx=0):
     """ (str, str, str) -> dict
 
-    Crawl chunithm data from the official website.
+    Crawl CHUNITHM NEW data from the official website.
 
+    Note: JP Version
     >>> get_chunithm_data("stypr", "password")
     """
-    host = "https://chunithm-net.com/mobile"
+    host = "https://new.chunithm-net.com/chuni-mobile/html/mobile"
     headers = {"User-Agent": "Mozilla/5.0"}
     result = {}
     r = requests.Session()
@@ -173,35 +174,50 @@ def get_chunithm_data(username, password, user_idx=0):
         response.text,
     )
     user_nickname = re.findall(
-        '<div class="player_name">\n.+\n(.+)\n.+</div>',
+        '<div class="player_name_in">(.+)</div>',
         response.text
     )
     user_level = re.findall(
-        '<div class="player_lv"><span.+>.+</span>(.+)</div>',
+        '<div class="player_lv">((<span.+>(.+)</span>)?)(.+)</div>',
         response.text
     )
-    user_ratings = re.findall(
-        (
-            '<div class="player_rating">\n.+'
-            + 'RATING : (.+) / '
-            + '\(<span.+>.+</span> (.+)\)'
-        ),
-        response.text,
+    user_rating_max = re.findall(
+        '<div class="player_rating_max">(.+)</div>',
+        response.text
     )
+    user_rating = re.findall(
+        '<img src="' + host + '/images/rating/[a-z]+_(.+)_(.+).png" />',
+        response.text
+    )
+    # Translate img to numeric
+    if user_rating:
+        user_rating_numeric = ""
+        for _digit in user_rating:
+            if _digit[1] == "comma":
+                user_rating_numeric += "."
+            else:
+                user_rating_numeric += _digit[1].lstrip("0")
+        user_rating_numeric = float(user_rating_numeric)
+    else:
+        user_rating_numeric = 0.0
 
     result["info"] = {
         "title": user_title[0][1],
         "nickname": user_nickname[0].strip(),
-        "level": user_level[0],
-        "current_rating": user_ratings[0][0],
-        "max_rating": user_ratings[0][1],
-        "team": user_team[0],
+        "level": user_level[0][3] if len(user_level) else None,
+        "current_rating": user_rating_numeric,
+        "max_rating": float(user_rating_max[0]),
+        "team": user_team[0][3] if len(user_team) else None,
     }
+    print(result['info'])
 
     # parse latest 10 playlogs
     result["log"] = []
     response = r.get(f"{host}/record/playlog")
     user_log = response.text.split('<div class="frame02 w400">')[1:-1]
+
+    # 0 = D, 13 = SSS+
+    score_table = ("D", "C", "B", "BB", "BBB", "A", "AA", "AAA", "S", "S+", "SS", "SS+", "SSS", "SSS+")
     for _log in user_log[:10]:
         _log_date = re.findall(
             '<div class="play_datalist_date">(.+)</div>',
@@ -212,23 +228,24 @@ def get_chunithm_data(username, password, user_idx=0):
             _log
         )
         _log_difficulty = re.findall(
-            f'<img src="{host}/images/icon_text_(.+).png">',
+            f'<img src="{host}/images/musiclevel_(.+).png">',
             _log
         )
         _log_score_sign = re.findall(
             f'<img src="{host}/images/icon_rank_(.+).png" />',
             _log
-        ) # 1 = C, 10 = SSS
+        )
         _log_score = re.findall(
-            '<div class="play_musicdata_score_text">Score：(.+)</div>',
+            '<div class="play_musicdata_score_text">(.+)</div>',
             _log,
         )
+        _log_score_sign = score_table[int(_log_score_sign[0])]
         _log_extra = re.findall(
             '<img src="(.+.png)".+/>',
             _log.split('<div class="play_musicdata_icon clearfix">')[1]
         )
         _log_is_new_record = re.findall(
-            f'{host}/images/icon_newrecord.jpg',
+            f'{host}/images/icon_new.jpg',
             _log
         )
         result["log"].append(
@@ -236,7 +253,7 @@ def get_chunithm_data(username, password, user_idx=0):
                 "date": _log_date[0].strip(),
                 "title": _log_title[0].strip(),
                 "difficulty": _log_difficulty[0].upper(),
-                "score_sign": _log_score_sign[0],
+                "score_sign": _log_score_sign,
                 "is_new_record": bool(_log_is_new_record),
                 "score": int(_log_score[0].strip().replace(",", "")),
                 "extra": _log_extra,
