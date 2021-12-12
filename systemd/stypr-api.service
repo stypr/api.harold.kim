@@ -1,0 +1,17 @@
+[Unit]
+Description = api.harold.kim
+After = network.target
+ 
+[Service]
+Type = simple
+ExecStart = gunicorn -w 4 -k uvicorn.workers.UvicornWorker server:app -b:3000
+WorkingDirectory = /srv/api.harold.kim/
+User = stypr
+Group = stypr
+Restart = on-failure
+SyslogIdentifier = stypr-api
+RestartSec = 5
+TimeoutStartSec = infinity
+ 
+[Install]
+WantedBy = multi-user.target

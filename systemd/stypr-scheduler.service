@@ -1,0 +1,17 @@
+[Unit]
+Description = api.harold.kim scheduler
+After = network.target
+ 
+[Service]
+Type = simple
+ExecStart = python3 scheduler.py
+WorkingDirectory = /srv/api.harold.kim/
+User = stypr
+Group = stypr
+Restart = on-failure
+SyslogIdentifier = stypr-scheduler
+RestartSec = 5
+TimeoutStartSec = infinity
+ 
+[Install]
+WantedBy = multi-user.target

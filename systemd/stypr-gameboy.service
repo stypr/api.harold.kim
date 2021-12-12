@@ -1,0 +1,17 @@
+[Unit]
+Description = stypr-gameboy
+After = network.target
+ 
+[Service]
+Type = simple
+ExecStart = /srv/gameboy_server/gameboyd ./pokemon.gb
+WorkingDirectory = /srv/gameboy_server/
+User = gameboy
+Group = gameboy
+Restart = on-failure
+SyslogIdentifier = stypr-gameboy
+RestartSec = 5
+TimeoutStartSec = infinity
+ 
+[Install]
+WantedBy = multi-user.target

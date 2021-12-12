@@ -52,9 +52,10 @@ def run_weekly_task():
 
 
 if __name__ == "__main__":
-    sched = BlockingScheduler(timezone='Asia/Tokyo')
+    sched = BlockingScheduler(timezone='Asia/Tokyo', daemon=True)
     sched.add_job(run_update_task, 'interval', hours=1, args=[])
     sched.add_job(run_asset_task, 'interval', hours=3, args=[])
     sched.add_job(run_weekly_task, 'cron', day_of_week='mon', hour=16, minute=00, args=[])
-    print("[*] Scheduler Started!")
+    print("[-] Scheduler Started!")
     sched.start()
+    print("[-] Scheduler Stopped!")
