@@ -32,8 +32,6 @@ async def root():
 
 if __name__ == "__main__":
     if len(sys.argv) != 1:
-        #run_update_task()
-        # run_asset_task()
         uvicorn.run(app, host="0.0.0.0", port=4000, loglevel="debug")
     else:
         uvicorn.run("server:app", port=3000)
