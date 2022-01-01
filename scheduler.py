@@ -19,7 +19,7 @@ from crawler.pjsekai_api import proseka
 ####### Scheduler #######
 def run_update_task():
     """ Function for regular hourly updates.. """
-    print("[*] Starting Scheduler..")
+    print("[*] Started: Update Task")
 
     list_crawler = [sega, swarm, steam, gists, osu, proseka]
     for crawler in list_crawler:
@@ -42,12 +42,14 @@ def run_update_task():
 
 def run_asset_task():
     """ Updating asset server """
+    print("[*] Started: Proseka Task")
     proseka.get_character_assets()
     proseka.get_database()
     proseka.update_asset_server()
 
 def run_weekly_task():
     """ Run daily tasks """
+    print("[*] Started: Weekly Task")
     storefinder.update_data()
 
 
@@ -55,9 +57,10 @@ if __name__ == "__main__":
     # run_update_task()
     # exit(0)
     sched = BlockingScheduler(timezone='Asia/Tokyo', daemon=True)
-    sched.add_job(run_update_task, 'interval', hours=1, args=[])
-    sched.add_job(run_asset_task, 'interval', hours=3, args=[])
-    sched.add_job(run_weekly_task, 'cron', day_of_week='mon', hour=16, minute=00, args=[])
+    sched.add_job(run_update_task, 'interval', hours=1, args=[], jitter=120, id='update_task')
+    sched.add_job(run_asset_task, 'interval', hours=3, args=[], jitter=120, id='asset_task')
+    sched.add_job(run_weekly_task, 'cron', day_of_week='mon', hour=16, minute=00, args=[], jitter=120, id='weekly_task')
     print("[-] Scheduler Started!")
     sched.start()
     print("[-] Scheduler Stopped!")
+
