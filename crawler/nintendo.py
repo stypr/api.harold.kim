@@ -26,11 +26,17 @@ from bs4 import BeautifulSoup
 
 # load envvars
 load_dotenv()
+
 NINTENDO_TOKEN = os.getenv("NINTENDO_TOKEN")
 NINTENDO_USER_ID = os.getenv("NINTENDO_USER_ID")
 NINTENDO_DEVICE_ID = os.getenv("NINTENDO_DEVICE_ID")
 NINTENDO_CLIENT_ID = os.getenv("NINTENDO_CLIENT_ID")
+"""
+For normal clients
 
+NINTENDO_CLIENT_ID = "71b963c1b7b6d119"
+NINTENDO_CLIENT_SCOPE = "openid user user.birthday user.mii user.screenName"
+"""
 # client info
 NINTENDO_CLIENT_SCOPE = "openid user user.mii moonUser:administration moonDevice:create moonOwnedDevice:administration moonParentalControlSetting moonParentalControlSetting:update moonParentalControlSettingState moonPairingState moonSmartDevice:administration moonDailySummary moonMonthlySummary"
 NINTENDO_NSO_VERSION = "1.14.0"
@@ -283,18 +289,41 @@ def get_monthly_summary(session_token, month=datetime.now().month):
     device_list = r.json()
     return device_list
 
-'''
+def get_monthly_playlog():
+    """ get playlog of the current month """
+    result = {}
+    monthly_summary = get_monthly_summary(NINTENDO_TOKEN)
+
+    for playlog in monthly_summary['items']:
+
+        # Gather game list
+        for app_info in playlog['playedApps']:
+            if not result.get(app_info['applicationId'], None):
+                result[app_info['applicationId']] = {
+                    "image": app_info['imageUri']['medium'],
+                    "title": app_info['title'],
+                    "playtime": 0,
+                }
+
+        # Gather anonymous player info
+        if playlog["anonymousPlayer"]:
+            for game_info in playlog["anonymousPlayer"].get("playedApps", []):
+                result[game_info['applicationId']]['playtime'] += game_info['playingTime']
+
+        # Gather existing user info
+        for user_info in playlog.get("devicePlayers", {}):
+            for game_info in user_info.get('playedApps', []):
+                result[game_info['applicationId']]['playtime'] += game_info['playingTime']
+
+    return result
+
 def collect_data():
-    pass
-    result = get_my_checkin(SWARM_ACCESS_TOKEN)
-    result['checkins']['items'] = result['checkins']['items'][:3]
+    result = get_monthly_playlog()
     return result
 
 def verify_data(data):
     """ Verify data """
     return True
-
-'''
 
 if __name__ == "__main__":
     if not NINTENDO_TOKEN:
@@ -309,9 +338,6 @@ if __name__ == "__main__":
         NINTENDO_DEVICE_ID = get_device_list(NINTENDO_TOKEN)['items'][0]['deviceId']
         print("NINTENDO_DEVICE_ID =", NINTENDO_DEVICE_ID)
 
-    monthly_summary = get_monthly_summary(NINTENDO_TOKEN)
-    print(monthly_summary)
-
-    # f = open("nintendo.json", "w")
-    # f.write(json.dumps(monthly_summary(NINTENDO_TOKEN)))
-    # f.close()
+    f = open("nintendo.json", "w")
+    f.write(json.dumps(get_monthly_playlog()))
+    f.close()

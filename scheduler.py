@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 #-*- coding: utf-8 -*-
 """
-server.py
+scheduler.py
 
 Main application for the scheduler and the web server
 """
@@ -12,7 +12,7 @@ import time
 import json
 
 from apscheduler.schedulers.blocking import BlockingScheduler # BackgroundScheduler
-from crawler import sega, swarm, steam, gists, osu
+from crawler import sega, swarm, steam, gists, osu, nintendo
 from crawler import storefinder
 from crawler.pjsekai_api import proseka
 
@@ -21,7 +21,7 @@ def run_update_task():
     """ Function for regular hourly updates.. """
     print("[*] Started: Update Task")
 
-    list_crawler = [sega, swarm, steam, gists, osu, proseka]
+    list_crawler = [sega, swarm, steam, gists, osu, proseka, nintendo]
     for crawler in list_crawler:
         try:
             crawler_name = crawler.__name__.split(".")[-1]
@@ -54,8 +54,8 @@ def run_weekly_task():
 
 
 if __name__ == "__main__":
-    # run_update_task()
-    # exit(0)
+    run_update_task()
+    exit(0)
     sched = BlockingScheduler(timezone='Asia/Tokyo', daemon=True)
     sched.add_job(run_update_task, 'interval', hours=1, args=[], jitter=120, id='update_task')
     sched.add_job(run_asset_task, 'interval', hours=3, args=[], jitter=120, id='asset_task')
