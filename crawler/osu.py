@@ -56,14 +56,14 @@ def collect_data(user_id="4266189"):
     Fetch data and optimize results
     """
     r = fetch_data(user_id)
-    r['recent_play'] = sorted(r['recent_play'], key=lambda x: datetime.datetime.strptime(x['created_at'], "%Y-%m-%dT%H:%M:%S+00:00").timestamp(), reverse=True)[:10]
+    r['recent_play'] = sorted(r['recent_play'], key=lambda x: datetime.datetime.strptime(x['ended_at'], "%Y-%m-%dT%H:%M:%S+00:00").timestamp(), reverse=True)[:10]
 
     for i, _record in enumerate(r['recent_play']):
         r['recent_play'][i] = {
             'accuracy': round(_record['accuracy'] * 100, 2),
             'rank': _record['rank'],
             'pp': _record['pp'],
-            'created_at': datetime.datetime.strptime(_record['created_at'], "%Y-%m-%dT%H:%M:%S+00:00").timestamp(),
+            'created_at': datetime.datetime.strptime(_record['ended_at'], "%Y-%m-%dT%H:%M:%S+00:00").timestamp(),
             'beatmap_difficulty': _record['beatmap']['difficulty_rating'],
             'beatmap_level': _record['beatmap']['version'],
             'beatmap_artist': _record['beatmapset']['artist'],

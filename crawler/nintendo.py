@@ -39,9 +39,9 @@ NINTENDO_CLIENT_SCOPE = "openid user user.birthday user.mii user.screenName"
 """
 # client info
 NINTENDO_CLIENT_SCOPE = "openid user user.mii moonUser:administration moonDevice:create moonOwnedDevice:administration moonParentalControlSetting moonParentalControlSetting:update moonParentalControlSettingState moonPairingState moonSmartDevice:administration moonDailySummary moonMonthlySummary"
-NINTENDO_NSO_VERSION = "1.14.0"
-NINTENDO_PCTL_VERSION = "1.16.0"
-NINTENDO_PCTL_VERSION_BUILD = "310"
+NINTENDO_NSO_VERSION = "2.1.1"
+NINTENDO_PCTL_VERSION = "1.17.0"
+NINTENDO_PCTL_VERSION_BUILD = "340"
 
 """
 For normal Splatoon clients
@@ -294,6 +294,7 @@ def get_monthly_playlog():
     result = {}
     monthly_summary = get_monthly_summary(NINTENDO_TOKEN)
 
+    # print(monthly_summary)
     for playlog in monthly_summary['items']:
 
         # Gather game list
@@ -338,6 +339,7 @@ if __name__ == "__main__":
         NINTENDO_DEVICE_ID = get_device_list(NINTENDO_TOKEN)['items'][0]['deviceId']
         print("NINTENDO_DEVICE_ID =", NINTENDO_DEVICE_ID)
 
-    f = open("nintendo.json", "w")
-    f.write(json.dumps(get_monthly_playlog()))
-    f.close()
+    print(get_monthly_playlog())
+    # f = open("nintendo.json", "w")
+    # f.write(json.dumps(get_monthly_playlog()))
+    # f.close()

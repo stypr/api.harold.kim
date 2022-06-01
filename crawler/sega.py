@@ -386,16 +386,16 @@ def collect_data():
     """ collect data """
     result = {}
     result['ongeki'] = get_ongeki_data(SEGA_USERNAME, SEGA_PASSWORD)
-    result['chunithm'] = get_chunithm_data(SEGA_USERNAME, SEGA_PASSWORD)
+    # result['chunithm'] = get_chunithm_data(SEGA_USERNAME, SEGA_PASSWORD)
     result['maimai'] = get_maimai_data(SEGA_USERNAME, SEGA_PASSWORD)
     return result
 
 def verify_data(data):
     """ Verify data """
-    return data['ongeki'] and data['chunithm'] and data['maimai']
+    return data['ongeki'] and data['maimai']
 
 if __name__ == "__main__":
     assert SEGA_USERNAME and SEGA_PASSWORD
     print(get_ongeki_data(SEGA_USERNAME, SEGA_PASSWORD))
-    print(get_chunithm_data(SEGA_USERNAME, SEGA_PASSWORD))
+    # print(get_chunithm_data(SEGA_USERNAME, SEGA_PASSWORD))
     print(get_maimai_data(SEGA_USERNAME, SEGA_PASSWORD))

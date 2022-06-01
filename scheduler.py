@@ -54,8 +54,8 @@ def run_weekly_task():
 
 
 if __name__ == "__main__":
-    run_update_task()
-    exit(0)
+    # run_update_task()
+    # exit(0)
     sched = BlockingScheduler(timezone='Asia/Tokyo', daemon=True)
     sched.add_job(run_update_task, 'interval', hours=1, args=[], jitter=120, id='update_task')
     sched.add_job(run_asset_task, 'interval', hours=3, args=[], jitter=120, id='asset_task')
