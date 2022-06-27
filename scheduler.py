@@ -12,7 +12,7 @@ import time
 import json
 
 from apscheduler.schedulers.blocking import BlockingScheduler # BackgroundScheduler
-from crawler import sega, swarm, steam, gists, osu, nintendo
+from crawler import sega, gists, nintendo
 from crawler import storefinder
 from crawler.pjsekai_api import proseka
 
@@ -21,7 +21,7 @@ def run_update_task():
     """ Function for regular hourly updates.. """
     print("[*] Started: Update Task")
 
-    list_crawler = [sega, swarm, steam, gists, osu, proseka, nintendo]
+    list_crawler = [sega, gists, proseka, nintendo]
     for crawler in list_crawler:
         try:
             crawler_name = crawler.__name__.split(".")[-1]
